@@ -1,41 +1,267 @@
-<!-- 結果画面カード -->
-<div class="result-card">
-  <div class="rank-badge">出荷等級：特秀（大吉）</div>
-  <h2 class="grape-name">キングデラウェア型</h2>
-  <p class="catchphrase">「看板はデカいが、媚びは売らない。分かる奴だけついてこい」</p>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ぶどう占い 2027 | あなたの品種と本日の出荷等級</title>
+  <meta name="description" content="性格診断×出荷等級おみくじ！あなたのぶどうタイプと2027年の開運ぶどうを占います。">
   
-  <div class="description">
-    <!-- 性格解説テキスト -->
+  <style>
+    :root {
+      --primary: #6b2d5c;
+      --secondary: #2e7d32;
+      --accent: #d81b60;
+      --bg: #fbf9fa;
+      --card-bg: #ffffff;
+      --text: #2c2c2c;
+      --gray: #666666;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.6; padding: 20px 12px; }
+    .container { max-width: 600px; margin: 0 auto; background: var(--card-bg); border-radius: 16px; padding: 28px 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.06); }
+
+    header { text-align: center; margin-bottom: 24px; }
+    .badge { display: inline-block; background: #eee4ea; color: var(--primary); font-size: 0.8rem; font-weight: bold; padding: 4px 10px; border-radius: 20px; margin-bottom: 8px; }
+    h1 { font-size: 1.6rem; color: var(--primary); margin-bottom: 6px; }
+    header p { font-size: 0.9rem; color: var(--gray); }
+
+    /* 設問エリア */
+    .question-block { margin-bottom: 24px; border-bottom: 1px dashed #e0d0d8; padding-bottom: 20px; }
+    .q-title { font-size: 1rem; font-weight: bold; margin-bottom: 12px; }
+    .options { display: flex; flex-direction: column; gap: 8px; }
+    .option-btn { background: #fff; border: 1.5px solid #d4c2cc; border-radius: 10px; padding: 12px 14px; text-align: left; font-size: 0.9rem; cursor: pointer; transition: all 0.2s ease; }
+    .option-btn:hover { border-color: var(--primary); background: #faf4f7; }
+    .option-btn.selected { border-color: var(--primary); background: var(--primary); color: #fff; font-weight: bold; }
+
+    /* 収穫ボタン */
+    #harvest-btn { display: none; width: 100%; background: linear-gradient(135deg, #7b2cbf, #9d4edd); color: #fff; font-size: 1.15rem; font-weight: bold; border: none; border-radius: 12px; padding: 16px; cursor: pointer; box-shadow: 0 4px 14px rgba(123, 44, 191, 0.35); transition: transform 0.1s; }
+    #harvest-btn:active { transform: scale(0.98); }
+
+    /* 結果カード */
+    #result-area { display: none; margin-top: 10px; }
+    .result-card { border: 2px solid #ecdde4; border-radius: 14px; padding: 22px 18px; background: #fff; }
+    .grade-tag { display: inline-block; font-size: 0.85rem; font-weight: bold; padding: 4px 12px; border-radius: 6px; background: #ffeb3b; color: #333; margin-bottom: 8px; }
+    .grape-title { font-size: 1.5rem; color: var(--primary); margin-bottom: 4px; }
+    .catchphrase { font-weight: bold; font-size: 0.95rem; color: #555; margin-bottom: 16px; border-left: 3px solid var(--primary); padding-left: 8px; }
+    .char-desc { font-size: 0.9rem; color: #333; margin-bottom: 20px; white-space: pre-line; }
+
+    .meta-box { background: #fdf8fa; border-radius: 10px; padding: 14px; margin-bottom: 18px; border: 1px solid #f0e2e8; }
+    .meta-item { font-size: 0.88rem; margin-bottom: 8px; }
+    .meta-item:last-child { margin-bottom: 0; }
+    .meta-item strong { color: var(--primary); }
+
+    /* アフィリエイトCTA */
+    .affiliate-box { background: #fff7ed; border: 1.5px solid #fed7aa; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: center; }
+    .aff-title { font-size: 0.95rem; font-weight: bold; color: #9a3412; margin-bottom: 10px; }
+    .aff-btn { display: block; width: 100%; background: #ea580c; color: #fff; text-decoration: none; font-weight: bold; font-size: 0.95rem; padding: 12px; border-radius: 8px; margin-bottom: 8px; box-shadow: 0 3px 8px rgba(234, 88, 12, 0.25); }
+    .aff-btn.sub { background: #fff; color: #ea580c; border: 1.5px solid #ea580c; box-shadow: none; }
+
+    /* SNSシェア */
+    .share-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: #000; color: #fff; text-decoration: none; font-weight: bold; font-size: 0.9rem; padding: 12px; border-radius: 8px; margin-top: 12px; }
+    .retry-btn { width: 100%; background: #e5e7eb; color: #374151; border: none; font-weight: bold; font-size: 0.9rem; padding: 10px; border-radius: 8px; margin-top: 8px; cursor: pointer; }
+
+    /* グレープフルーツ（大凶）演出 */
+    .is-grapefruit { border-color: #f59e0b !important; background: #fffbeb !important; }
+    .is-grapefruit .grape-title { color: #d97706 !important; }
+    .is-grapefruit .grade-tag { background: #dc2626 !important; color: #fff !important; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="badge">品種診断 × 運勢おみくじ</div>
+    <h1>🍇 ぶどう占い 2027</h1>
+    <p>あなたの本質ぶどうと、本日の出荷等級を判定します</p>
+  </header>
+
+  <!-- 質問エリア -->
+  <div id="quiz-area">
+    <div class="question-block" data-q="0">
+      <div class="q-title">Q1. 普段のあなたの立ち回りは？</div>
+      <div class="options">
+        <button class="option-btn" data-val="king">周りに媚びずマイペース。看板はデカい</button>
+        <button class="option-btn" data-val="shine">スマートで要領が良く、誰とでも円満にやる</button>
+        <button class="option-btn" data-val="kyoho">どっしり構えて頼られる昭和の親分肌</button>
+        <button class="option-btn" data-val="ryuho">身内には甘いが、アウェイだとメンタルが崩れる</button>
+      </div>
+    </div>
+
+    <div class="question-block" data-q="1">
+      <div class="q-title">Q2. 仕事やプライベートで重視するのは？</div>
+      <div class="options">
+        <button class="option-btn" data-val="nagano">無駄を削ぎ落としたスピードと合理性</button>
+        <button class="option-btn" data-val="nina">見た目の華やかさと自己肯定感</button>
+        <button class="option-btn" data-val="fujiminori">スケールの大きさと周囲への情の厚さ</button>
+        <button class="option-btn" data-val="chile">どんな過酷な環境でも生き残るタフネス</button>
+      </div>
+    </div>
+
+    <div class="question-block" data-q="2">
+      <div class="q-title">Q3. 周囲から言われがちな言葉は？</div>
+      <div class="options">
+        <button class="option-btn" data-val="a">「態度はデカいけど、中身はちゃんとしてる」</button>
+        <button class="option-btn" data-val="b">「隙がなさすぎて何を考えてるか分からない」</button>
+        <button class="option-btn" data-val="c">「繊細すぎて扱いがデリケート」</button>
+        <button class="option-btn" data-val="d">「どこに行っても平気な顔して順応するね」</button>
+      </div>
+    </div>
+
+    <button id="harvest-btn" onclick="harvestGrape()">🍇 房から1粒もぎ取る（結果を見る）</button>
   </div>
 
-  <hr>
-
-  <!-- 2027年 運勢パート -->
-  <div class="fortune-2027">
-    <h3>🍇 2027年のラッキーぶどう：【甲州】</h3>
-    <p>我が道を行くあなたの態度に、大ベテランの「品格と落ち着き」が加われば無敵の1年に。甲州ワインを嗜むと仕事運・金運がアップ！</p>
-  </div>
-
-  <!-- 相性パート -->
-  <div class="compatibility">
-    <h3>🤝 相性のいい相棒：【シャインマスカット】</h3>
-    <p>外回りは相手に任せ、中身はあなたが仕切る。このコンビに敵はいません。</p>
-  </div>
-
-  <hr>
-
-  <!-- アフィリエイト導線エリア -->
-  <div class="affiliate-cta">
-    <p class="cta-title">＼ あなたをパワーアップさせる収穫祭 ／</p>
-    
-    <!-- ボタン1: 自分の品種 -->
-    <a href="【アフィリエイトURL】" class="btn btn-primary" target="_blank" rel="noopener">
-      キングデラウェアを産直・ふるさと納税で探す
-    </a>
-
-    <!-- ボタン2: 相棒との食べ比べ -->
-    <a href="【アフィリエイトURL】" class="btn btn-secondary" target="_blank" rel="noopener">
-      【最強相性】シャインマスカットとの食べ比べセットを見る
-    </a>
-  </div>
+  <!-- 結果表示エリア -->
+  <div id="result-area"></div>
 </div>
+
+<script>
+  // 品種データベース
+  const GRAPES = {
+    king: {
+      name: "キングデラウェア型",
+      catch: "「看板はデカいが媚びは売らない。分かる奴だけついてこい」",
+      desc: "堂々たる自信とマイペースを崩さない我が道を行く実力者。万人受けを狙わないため人気があるようなないような絶妙なポジションにいますが、中身の濃密な甘酸っぱさと実入りは本物。コアなファンに熱烈に支持される玄人肌です。",
+      lucky2027: "【甲州】（1000年の伝統と奥ゆかしさをプラスすると天下無敵）",
+      partner: "【シャインマスカット】（外回りは任せて内側を仕切れば最強）",
+      searchQuery: "キングデラウェア ぶどう"
+    },
+    shine: {
+      name: "シャインマスカット型",
+      catch: "「皮ごとOK、種もなし。現代が求めた完全無欠のエリート」",
+      desc: "コミュ力が高くスマートな合理主義者。誰にでもオープンでトラブルを持ち込みません。完璧すぎて計算高いと見られることもありますが、結果を出し続ける実力は本物です。",
+      lucky2027: "【マスカット・ベーリーA】（泥臭い人間味を取り入れると評価急上昇）",
+      partner: "【キングデラウェア】（お互いの表と裏を補い合える名タッグ）",
+      searchQuery: "シャインマスカット 秀品"
+    },
+    kyoho: {
+      name: "巨峰型",
+      catch: "「王道の風格。懐の深さで語るぶどう界の親分」",
+      desc: "実績と信頼を重んじるリーダー気質。コクのある情の厚さで周囲から慕われます。本音をさらけ出すまでに少し時間がかかりますが、一度認めた仲間は最後まで守り抜きます。",
+      lucky2027: "【クイーンニーナ】（若々しい華やかさを取り入れると吉）",
+      partner: "【ピオーネ】（阿吽の呼吸で現場を回せる頼れる相棒）",
+      searchQuery: "巨峰 産直"
+    },
+    ryuho: {
+      name: "竜宝型",
+      catch: "「果汁100%の情熱と、軸からこぼれ落ちるガラスのハート」",
+      desc: "溢れんばかりの魅力を持つロマンチスト。身内には神対応を見せますが、アウェイの環境や長距離移動に弱く、ストレスがかかると心がポロポロ折れてしまう繊細な天才肌です。",
+      lucky2027: "【チリ産シードレス】（マイナス18度でも動じないタフさを吸収せよ）",
+      partner: "【藤稔】（お互いのデリケートさを理解し合える優しい関係）",
+      searchQuery: "竜宝 ぶどう 幻"
+    },
+    nagano: {
+      name: "ナガノパープル型",
+      catch: "「皮を剥く時間すら惜しい。最短距離で極める黒のエリート」",
+      desc: "巨峰のコクとシャインマスカットの利便性を兼ね備えたストイック完璧主義。無駄を徹底的に削ぎ落としますが、感情論に巻き込まれると粒が裂けやすいのが弱点です。",
+      lucky2027: "【スチューベン】（慌てずじっくり熟成を待つ粘り強さを）",
+      partner: "【甲州】（静かな職人同士、干渉せずに信頼し合える）",
+      searchQuery: "ナガノパープル フルーツ"
+    },
+    chile: {
+      name: "チリ産シードレス型",
+      catch: "「マイナス18度上等。世界中どこでも平気な顔で出勤」",
+      desc: "過酷な冷凍庫に放り込まれてもサクサク噛み砕ける驚異のタフネス。環境変化を一切気にせず安定した成果を出し続けますが、情緒や風情に欠けると見られがちです。",
+      lucky2027: "【デラウェア】（初心に戻って素朴な甘酸っぱさを思い出す年）",
+      partner: "【竜宝】（繊細な相手を無感情かつ完璧にカバーできる）",
+      searchQuery: "冷凍ぶどう シードレス"
+    }
+  };
+
+  // 凶枠：グレープフルーツ（強制上書き）
+  const GRAPEFRUIT = {
+    name: "グレープフルーツ（凶）",
+    catch: "「ぶどうヅラして生きてきた、柑橘界からの不法侵入者」",
+    desc: "集団に平然と馴染んでいるようで、根本的な価値観が一切噛み合っていない異分子。特有の苦味で空気を凍らせ、分厚い皮で心をガードしています。※ぶどうではありません（ミカン科）。",
+    lucky2027: "【デラウェア】（柑橘のトゲを捨て、初心に帰って小さく丸くなれ）",
+    partner: "【角砂糖】（素直に甘やかされる覚悟を持つこと）",
+    searchQuery: "シャインマスカット 訳あり" // 救済用
+  };
+
+  const GRADES = [
+    { label: "特秀（大吉）", text: "朝採れ完熟・ブルーム完璧。今日のあなたは無敵の仕上がり！" },
+    { label: "秀（中吉）", text: "糖度十分、贈答用クラス。周囲に配れば評価が爆上がりします。" },
+    { label: "良（吉）", text: "日常使いにちょうどいい安定感。堅実な一歩を踏み出せます。" },
+    { label: "訳あり（小吉）", text: "味は抜群だが粒ぞろいが微妙。ちょっと見栄を張ると失敗しがち。" }
+  ];
+
+  let userAnswers = {};
+
+  // 選択肢クリック
+  document.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const qIndex = this.closest('.question-block').dataset.q;
+      this.closest('.options').querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      this.classList.add('selected');
+      userAnswers[qIndex] = this.dataset.val;
+
+      // 3問すべて答えたら収穫ボタンを表示
+      if (Object.keys(userAnswers).length === 3) {
+        document.getElementById('harvest-btn').style.display = 'block';
+        document.getElementById('harvest-btn').scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  });
+
+  // もぎ取る（診断実行）
+  function harvestGrape() {
+    const isGrapefruit = Math.random() < 0.08; // 8%で大凶グレープフルーツ
+    let grapeData, gradeData, isGf = false;
+
+    if (isGrapefruit) {
+      grapeData = GRAPEFRUIT;
+      gradeData = { label: "規格外・大凶", text: "選果ミス発生！ぶどうの木から柑橘類がもぎ取られました。" };
+      isGf = true;
+    } else {
+      // Q1の回答をベースに判定
+      const key = userAnswers[0] || 'king';
+      grapeData = GRAPES[key] || GRAPES['king'];
+      gradeData = GRADES[Math.floor(Math.random() * GRADES.length)];
+    }
+
+    // アフィリエイトURL（※自身の楽天/AmazonアソシエイトURLに差し替え可能）
+    const affSearchUrl = `https://search.rakuten.co.jp/search/mall/${encodeURIComponent(grapeData.searchQuery)}/`;
+    const affPairUrl = `https://search.rakuten.co.jp/search/mall/${encodeURIComponent("ぶどう 食べ比べ ふるさと納税")}/`;
+
+    // 結果HTML生成
+    const resultHtml = `
+      <div class="result-card ${isGf ? 'is-grapefruit' : ''}">
+        <div class="grade-tag">${gradeData.label}</div>
+        <h2 class="grape-title">${grapeData.name}</h2>
+        <div class="catchphrase">${grapeData.catch}</div>
+        <div class="char-desc">${grapeData.desc}\n\n💡 <strong>本日の状態：</strong>${gradeData.text}</div>
+
+        <div class="meta-box">
+          <div class="meta-item">🍇 <strong>2027年の開運ぶどう：</strong> ${grapeData.lucky2027}</div>
+          <div class="meta-item">🤝 <strong>相性のいい相棒：</strong> ${grapeData.partner}</div>
+        </div>
+
+        <!-- アフィリエイト送客エリア -->
+        <div class="affiliate-box">
+          <div class="aff-title">＼ 旬の味覚を産直・ふるさと納税でチェック ／</div>
+          <a href="${affSearchUrl}" class="aff-btn" target="_blank" rel="noopener">
+            ${isGf ? '本物のぶどうでお口直しする（シャインマスカット等）' : `${grapeData.name.replace('型','')}を産直・楽天で探す`}
+          </a>
+          <a href="${affPairUrl}" class="aff-btn sub" target="_blank" rel="noopener">
+            【相性抜群】旬のぶどう2種食べ比べセットを見る
+          </a>
+        </div>
+
+        <!-- SNSシェア -->
+        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`【ぶどう占い2027】私の結果は【${gradeData.label}】${grapeData.name}でした！\n${grapeData.catch}\n\n▼あなたの品種を収穫する\n`)}&url=${encodeURIComponent(window.location.href)}" target="_blank" rel="noopener" class="share-btn">
+          𝕏 で結果をポストする
+        </a>
+        <button class="retry-btn" onclick="location.reload()">もう一度もぎ取る</button>
+      </div>
+    `;
+
+    document.getElementById('quiz-area').style.display = 'none';
+    const resArea = document.getElementById('result-area');
+    resArea.innerHTML = resultHtml;
+    resArea.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
