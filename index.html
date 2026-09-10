@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ぶどう占い 2027 | あなたの品種と本日の出荷等級</title>
+  <title>ぶどう占い 2027 | あなたの品種と出荷等級</title>
   <style>
     :root {
       --primary: #6b2d5c;
@@ -23,20 +23,19 @@
     .progress-wrap { margin-bottom: 20px; }
     .progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 6px; }
     .progress-bar-bg { width: 100%; height: 8px; background: #eedfe6; border-radius: 4px; overflow: hidden; }
-    .progress-fill { width: 4%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); transition: width 0.3s ease; }
+    .progress-fill { width: 4%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); transition: width 0.25s ease; }
 
     /* クイズエリア */
-    .q-title { font-size: 1.15rem; font-weight: bold; margin-bottom: 18px; line-height: 1.5; }
-    .options { display: flex; flex-direction: column; gap: 10px; }
-    .option-btn { background: #ffffff; border: 2px solid #ecdde4; border-radius: 12px; padding: 14px 16px; text-align: left; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.15s ease; outline: none; }
+    .q-title { font-size: 1.12rem; font-weight: bold; margin-bottom: 16px; line-height: 1.5; }
+    .options { display: flex; flex-direction: column; gap: 9px; }
+    .option-btn { background: #ffffff; border: 1.5px solid #ecdde4; border-radius: 12px; padding: 13px 15px; text-align: left; font-size: 0.92rem; font-weight: 500; cursor: pointer; transition: all 0.15s ease; outline: none; }
     .option-btn:hover { border-color: var(--primary); background: #faf4f8; }
     .option-btn:active { transform: scale(0.98); }
 
     /* 第25問：スロットマシン演出 */
     .slot-machine { text-align: center; background: #2b1024; border: 4px solid #ffd700; border-radius: 16px; padding: 24px 16px; color: #fff; margin-top: 10px; }
-    .slot-screen { background: #111; border: 3px solid #666; border-radius: 10px; height: 75px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; color: #ffeb3b; margin-bottom: 20px; letter-spacing: 1px; }
+    .slot-screen { background: #111; border: 3px solid #666; border-radius: 10px; height: 75px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: bold; color: #ffeb3b; margin-bottom: 20px; letter-spacing: 1px; }
     .slot-btn { width: 100%; background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; border: none; border-radius: 12px; padding: 16px; font-size: 1.15rem; font-weight: bold; cursor: pointer; box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4); }
-    .slot-btn:disabled { background: #555; box-shadow: none; cursor: not-allowed; }
 
     /* 結果カード */
     #result-area { display: none; }
@@ -51,16 +50,16 @@
     .meta-item:last-child { margin-bottom: 0; }
     .meta-item strong { color: var(--primary); }
 
-    /* アフィリエイトエリア */
-    .affiliate-box { background: #fff7ed; border: 1.5px solid #fed7aa; border-radius: 12px; padding: 16px; margin: 20px 0; text-align: center; }
-    .aff-title { font-size: 0.95rem; font-weight: bold; color: #9a3412; margin-bottom: 10px; }
-    .aff-btn { display: block; width: 100%; background: #ea580c; color: #fff; text-decoration: none; font-weight: bold; font-size: 0.95rem; padding: 12px; border-radius: 8px; margin-bottom: 8px; }
-    .aff-btn.sub { background: #fff; color: #ea580c; border: 1.5px solid #ea580c; }
+    /* アフィリエイト表示枠 */
+    .affiliate-wrapper { background: #fff7ed; border: 1.5px solid #fed7aa; border-radius: 14px; padding: 16px 8px; margin: 20px 0; text-align: center; overflow: hidden; }
+    .aff-header { font-size: 0.95rem; font-weight: bold; color: #9a3412; margin-bottom: 12px; }
+    .aff-content { display: flex; justify-content: center; width: 100%; overflow-x: auto; }
+    .aff-content table { max-width: 100% !important; margin: 0 auto !important; }
 
     .share-btn { display: flex; align-items: center; justify-content: center; width: 100%; background: #000; color: #fff; text-decoration: none; font-weight: bold; font-size: 0.95rem; padding: 12px; border-radius: 8px; margin-top: 12px; }
     .retry-btn { width: 100%; background: #e5e7eb; color: #374151; border: none; font-weight: bold; font-size: 0.9rem; padding: 10px; border-radius: 8px; margin-top: 8px; cursor: pointer; }
 
-    /* グレープフルーツ（大凶）専用カラー */
+    /* 大凶演出 */
     .is-grapefruit { border-color: #f59e0b !important; background: #fffbeb !important; }
     .is-grapefruit .grape-title { color: #d97706 !important; }
     .is-grapefruit .grade-tag { background: #dc2626 !important; color: #fff !important; }
@@ -69,7 +68,6 @@
 <body>
 
 <div class="container">
-  <!-- プログレス -->
   <div class="progress-wrap" id="progress-wrap">
     <div class="progress-info">
       <span>葡萄選別カルテ</span>
@@ -80,13 +78,13 @@
     </div>
   </div>
 
-  <!-- クイズエリア -->
+  <!-- クイズエリア（Q1〜Q24：各5択） -->
   <div id="quiz-area">
     <div class="q-title" id="q-title">読み込み中...</div>
     <div class="options" id="options-box"></div>
   </div>
 
-  <!-- 最終問題：スロットエリア -->
+  <!-- 第25問：運命のスロット -->
   <div id="slot-area" style="display: none;">
     <div class="q-title">Q25. 運命の出荷判定：スロットを止めろ！</div>
     <p style="font-size:0.9rem; color:var(--gray); margin-bottom:14px;">ここまで判定したあなたの気質に、今日の「果実の仕上がり・運勢」を掛け合わせます。</p>
@@ -101,236 +99,285 @@
 </div>
 
 <script>
-  // 設問リスト（1〜24問：性格診断／点数加算）
-  // 属性：king(キングデラ), shine(シャイン), kyoho(巨峰), ryuho(竜宝), nagano(ナガノパープル), fuji(藤稔), chile(チリ産)
+  // 全24問 × 各5択
   const QUESTIONS = [
     {
-      q: "Q1. 人間関係において、あなたの基本スタンスは？",
+      q: "Q1. 人間関係におけるあなたの基本スタンスは？",
       opts: [
-        { text: "看板はデカいが誰にでも媚びない。分かる人だけ来ればいい", type: "king" },
-        { text: "誰に対してもスマートで角を立てない。要領重視", type: "shine" },
-        { text: "どっしり構えて頼られる昭和の親分肌", type: "kyoho" },
-        { text: "身内には優しいが、アウェイの場では極度に緊張する", type: "ryuho" }
+        { text: "看板はデカいが誰にでも媚びない。分かる奴だけ来ればいい", type: "king" },
+        { text: "スマートに角を立てず、誰とでも円満に要領よくやる", type: "shine" },
+        { text: "どっしり構えて後輩や周囲に頼られる親分肌", type: "kyoho" },
+        { text: "身内には優しいが、アウェイでは極度に緊張する", type: "ryuho" },
+        { text: "無駄な馴れ合いを嫌い、最短距離で結果を出す", type: "nagano" }
       ]
     },
     {
-      q: "Q2. 自分の長所をひとつ挙げるなら？",
+      q: "Q2. 自分の最大の強みだと思うところは？",
       opts: [
-        { text: "無駄を削ぎ落とした最短距離での処理能力", type: "nagano" },
-        { text: "場を圧倒する存在感とスケールの大きさ", type: "fuji" },
-        { text: "過酷な環境でも平常運転を保てるタフさ", type: "chile" },
-        { text: "派手さはないが、確固たる濃い実力がある", type: "king" }
+        { text: "派手さはないが、一度味わうと離れられない濃密な実力", type: "king" },
+        { text: "場を圧倒するスケール感と器の大きさ", type: "fuji" },
+        { text: "どんな過酷な環境に放り込まれても平常運転を保てるタフさ", type: "chile" },
+        { text: "無駄を削ぎ落とした抜群の作業スピードと合理性", type: "nagano" },
+        { text: "圧倒的な清潔感と人を惹きつける華やかさ", type: "shine" }
       ]
     },
     {
-      q: "Q3. 仕事や作業を進めるときのスピード感は？",
+      q: "Q3. 予期せぬトラブルや逆境に見舞われたら？",
       opts: [
-        { text: "誰よりも早くスタートダッシュを決めて逃げ切る", type: "nagano" },
-        { text: "マイペースを絶対に崩さず、自分の間合いでやる", type: "king" },
-        { text: "チーム全体の様子を見ながら着実に進める", type: "kyoho" },
-        { text: "乗っている時は爆速だが、気分が落ちると手が止まる", type: "ryuho" }
+        { text: "表情ひとつ変えず淡々と冷静に対処する", type: "chile" },
+        { text: "責任を持って矢面に立ち、周囲をどっしり守る", type: "kyoho" },
+        { text: "根回しと段取りを駆使してスマートに大事を避ける", type: "shine" },
+        { text: "ストレスに耐えきれず心がポロポロ折れそうになる", type: "ryuho" },
+        { text: "「めんどくさいな」と態度に出しつつ力技でねじ伏せる", type: "king" }
       ]
     },
     {
-      q: "Q4. トラブルが起きたときのあなたの反応は？",
+      q: "Q4. 周囲から言われがちなあなたの「第一印象」は？",
       opts: [
-        { text: "表情ひとつ変えず淡々とリカバリーする", type: "chile" },
-        { text: "矢面に立って周囲を守る", type: "kyoho" },
-        { text: "スマートに根回しして大事を避ける", type: "shine" },
-        { text: "心がポロポロ折れそうになりつつ身内に助けを求める", type: "ryuho" }
+        { text: "「態度はデカそうに見えるけど、中身はしっかりしてる」", type: "king" },
+        { text: "「爽やかでスマート、非の打ち所がない」", type: "shine" },
+        { text: "「体格や存在感の迫力がすごい」", type: "fuji" },
+        { text: "「ストイックで隙がない」", type: "nagano" },
+        { text: "「静かで何を考えているか掴みにくい」", type: "chile" }
       ]
     },
     {
-      q: "Q5. 流行りのトレンドに対する態度は？",
+      q: "Q5. 休日や自由時間の過ごし方は？",
       opts: [
-        { text: "「ふーん、まあええんちゃう？」と一段上から眺める", type: "king" },
-        { text: "即座にキャッチアップして自分のものにする", type: "shine" },
-        { text: "流行り廃りに興味はない。実績こそが正義", type: "kyoho" },
-        { text: "効率化できるツールならすぐ取り入れる", type: "nagano" }
+        { text: "自分のテリトリーで誰にも邪魔されずマイペースに寛ぐ", type: "king" },
+        { text: "話題のスポットや最新の流行をスマートに楽しむ", type: "shine" },
+        { text: "昔馴染みの仲間や家族と旨い飯を食いに行く", type: "kyoho" },
+        { text: "予定を詰め込まず、自宅で冷凍保存されたように静止する", type: "chile" },
+        { text: "スキルアップやタスク消化など効率的に時間を使う", type: "nagano" }
       ]
     },
     {
-      q: "Q6. 他人から言われて一番嫌な言葉は？",
+      q: "Q6. 世間の流行り廃りに対するスタンスは？",
       opts: [
-        { text: "「中身がない」「ハッタリばかり」", type: "king" },
-        { text: "「要領が悪い」「融通が利かない」", type: "shine" },
-        { text: "「器が小さい」「頼りない」", type: "fuji" },
-        { text: "「メンタル弱すぎ」", type: "ryuho" }
+        { text: "「まあ、あれはあれでええんちゃう？」と一段上から眺める", type: "king" },
+        { text: "トレンドをいち早くキャッチして自分の武器にする", type: "shine" },
+        { text: "流行より何十年も通用する実績と伝統を重んじる", type: "kyoho" },
+        { text: "効率化や実利につながるものだけ即採用する", type: "nagano" },
+        { text: "流行に関係なく、自分が本当に気に入ったものだけ愛でる", type: "ryuho" }
       ]
     },
     {
-      q: "Q7. 飲み会や宴席でのあなたのポジションは？",
+      q: "Q7. 飲み会や会食でのあなたのポジションは？",
       opts: [
-        { text: "偉そうに座っているが、話すと案外気さく", type: "king" },
-        { text: "幹事や全体への気配りを完璧にこなす", type: "shine" },
-        { text: "上座でどっしり構えて若手の話を聞く", type: "kyoho" },
-        { text: "気心の知れた端っこの席で静かに楽しむ", type: "ryuho" }
+        { text: "ふんぞり返っているように見えるが、話すと案外気さく", type: "king" },
+        { text: "全体の注文や空気を完璧にコントロールする幹事役", type: "shine" },
+        { text: "上座でどっしり構えてみんなの近況に耳を傾ける", type: "kyoho" },
+        { text: "気の合う仲間の隣でひっそり落ち着いて飲む", type: "ryuho" },
+        { text: "豪快に飲んで食べて場を盛り上げるムードメーカー", type: "fuji" }
       ]
     },
     {
-      q: "Q8. ストレスが溜まったときの解消法は？",
+      q: "Q8. 仕事や作業を進める上で一番重視するのは？",
       opts: [
-        { text: "一人で引きこもり、誰とも会わない時間を作る", type: "chile" },
-        { text: "愚痴を言わず黙々と作業や筋トレに没頭する", type: "nagano" },
-        { text: "旨い飯を食って寝て忘れる", type: "fuji" },
-        { text: "信頼できる相手にだけ本音を吐き出す", type: "ryuho" }
+        { text: "余計な手戻りを生まないスピードと無駄の排除", type: "nagano" },
+        { text: "多少荒削りでも人を惹きつけるスケールの大きさ", type: "fuji" },
+        { text: "自分のやり方とペースを乱されないこと", type: "king" },
+        { text: "どんな理不尽な状況でも投げ出さない継続力", type: "chile" },
+        { text: "関係者全員が気持ちよく納得する仕上がり", type: "shine" }
       ]
     },
     {
-      q: "Q9. 自分の「頑固さ」についてどう思う？",
+      q: "Q9. 自分の「弱点・課題」をあげるなら？",
       opts: [
-        { text: "芯が通っているだけ。変えるつもりはない", type: "king" },
-        { text: "頑固ではなく状況に応じて柔軟に動く派", type: "shine" },
-        { text: "一度決めた筋は通さないと気が済まない", type: "kyoho" },
-        { text: "感情に流されやすく、頑固になりきれない", type: "ryuho" }
+        { text: "愛想笑いができず、初対面で圧が強く見られやすい", type: "king" },
+        { text: "完璧主義すぎて本音や弱みを見せるのが苦手", type: "shine" },
+        { text: "新しいやり方に切り替えるのに時間がかかる", type: "kyoho" },
+        { text: "メンタルがデリケートでプレッシャーに弱い", type: "ryuho" },
+        { text: "感情論に付き合うのが極端に苦手", type: "nagano" }
       ]
     },
     {
-      q: "Q10. 買い物をするときの基準は？",
+      q: "Q10. 人から相談や愚痴を持ちかけられたら？",
       opts: [
-        { text: "コスパと耐久性。どんな環境でも壊れないタフなもの", type: "chile" },
-        { text: "洗練されたデザインと無駄のない機能性", type: "nagano" },
-        { text: "知る人ぞ知る玄人向けの名品", type: "king" },
-        { text: "誰もが認める最高峰のブランド品", type: "shine" }
+        { text: "「まあ何とかなるやろ」と大物っぽく背中を叩く", type: "king" },
+        { text: "相手が求めている正解や慰めを察してスマートに返す", type: "shine" },
+        { text: "自分の経験を踏まえて熱く親身にアドバイスする", type: "kyoho" },
+        { text: "相手の辛さに共感しすぎて自分まで落ち込む", type: "ryuho" },
+        { text: "淡々と解決策のロジックだけを提示する", type: "chile" }
       ]
     },
     {
-      q: "Q11. 他人から受ける第一印象は？",
+      q: "Q11. 買い物をするときの判断基準は？",
       opts: [
-        { text: "「態度がデカそうに見えた」", type: "king" },
-        { text: "「清潔感があって爽やか」", type: "shine" },
-        { text: "「迫力があって近寄りがたい」", type: "fuji" },
-        { text: "「無口で何を考えているかわからない」", type: "chile" }
+        { text: "タフで壊れず、どんな過酷な扱いにも耐えうる実用性", type: "chile" },
+        { text: "洗練された無駄のないデザインと機能美", type: "nagano" },
+        { text: "知る人ぞ知る玄人向けの名品・逸品", type: "king" },
+        { text: "誰もが知っている安心と信頼のトップブランド", type: "shine" },
+        { text: "多少大味でもボリューム満点で満足感があるもの", type: "fuji" }
       ]
     },
     {
-      q: "Q12. 会議や議論でのあなたの発言スタイルは？",
+      q: "Q12. プレッシャーのかかる大舞台に立つ時は？",
       opts: [
-        { text: "要点だけをズバッと一刀両断する", type: "nagano" },
-        { text: "全員の顔色を見て落としどころを提案する", type: "shine" },
-        { text: "最後に一言、重みのある発言で締める", type: "kyoho" },
-        { text: "本質を突くが、反論されると急に口ごもる", type: "ryuho" }
+        { text: "「俺の力を見せてやる」と不敵に構える", type: "king" },
+        { text: "入念な準備とシミュレーションで隙をなくす", type: "shine" },
+        { text: "逃げ出したい気持ちを必死に抑えて身内にすがる", type: "ryuho" },
+        { text: "緊張という感情そのものをオフにして淡々とこなす", type: "chile" },
+        { text: "腹をくくって豪快にぶつかっていく", type: "fuji" }
       ]
     },
     {
-      q: "Q13. 自分の「プライド」は高い方だと思う？",
+      q: "Q13. 自分の「頑固さ」についてどう思う？",
       opts: [
-        { text: "高いが、それに見合う結果は出している自負がある", type: "king" },
-        { text: "無駄なプライドは捨てるのが一番スマート", type: "shine" },
-        { text: "伝統や看板を守るための誇りは絶対に譲らない", type: "kyoho" },
-        { text: "プライドはあるが、傷つけられると即撃沈する", type: "ryuho" }
+        { text: "自分の美学と筋を通しているだけ。曲げる気はない", type: "king" },
+        { text: "頑固ではなく、状況に応じて最も有利な選択を取る", type: "shine" },
+        { text: "守るべき義理や伝統は絶対に譲らない", type: "kyoho" },
+        { text: "頑固になりたいが、強く出られると折れがち", type: "ryuho" },
+        { text: "合理的な根拠があれば一瞬で方針転換する", type: "nagano" }
       ]
     },
     {
-      q: "Q14. 休みの日、予定が急にキャンセルになったら？",
+      q: "Q14. チームや組織の中での理想の立ち位置は？",
       opts: [
-        { text: "「よし、完全に自分のペースで過ごせる」と歓迎する", type: "king" },
-        { text: "すかさず別の予定を入れて時間を有効活用する", type: "nagano" },
-        { text: "何もせず家で冷凍庫のように静止して過ごす", type: "chile" },
-        { text: "少し寂しくなって誰かに連絡してみる", type: "ryuho" }
+        { text: "重役・ご意見番ポジション（口は出さないが存在感はある）", type: "king" },
+        { text: "花形のエース・ディレクター", type: "shine" },
+        { text: "現場を泥臭く束ねる大黒柱・リーダー", type: "kyoho" },
+        { text: "単独で成果を出すスナイパー・職人", type: "nagano" },
+        { text: "世界中どこに派遣されても結果を出す遊軍", type: "chile" }
       ]
     },
     {
-      q: "Q15. あなたの「感情の表に出やすさ」は？",
+      q: "Q15. ストレスが極限まで溜まったときの行動は？",
       opts: [
-        { text: "態度はデカいが、内面は案外照れ屋で分かりやすい", type: "king" },
-        { text: "ポーカーフェイスで常に微笑みを崩さない", type: "shine" },
+        { text: "完全に連絡を絶ち、一人きりで心を冷凍保存する", type: "chile" },
+        { text: "黙々と筋トレや作業に没頭して汗を流す", type: "nagano" },
+        { text: "旨い肉と酒を豪快に腹いっぱい詰め込む", type: "fuji" },
+        { text: "信頼できる相手にだけ堰を切ったように本音を吐く", type: "ryuho" },
+        { text: "「くだらん」と吐き捨てて自分の趣味に没頭する", type: "king" }
+      ]
+    },
+    {
+      q: "Q16. 他人から言われて一番腹が立つ言葉は？",
+      opts: [
+        { text: "「ただ威張ってるだけで中身がない」", type: "king" },
+        { text: "「要領ばかり良くて計算高い」", type: "shine" },
+        { text: "「器が小さい」「頼りがいがない」", type: "fuji" },
+        { text: "「感情論ばかりで仕事が遅い」", type: "nagano" },
+        { text: "「代わりなんていくらでもいる」", type: "kyoho" }
+      ]
+    },
+    {
+      q: "Q17. あなたの「感情のわかりやすさ」は？",
+      opts: [
+        { text: "態度はデカいが、照れや満足感が案外すぐ顔に出る", type: "king" },
+        { text: "ポーカーフェイスを徹底し、本音は絶対に出さない", type: "shine" },
         { text: "喜怒哀楽がはっきりしていて嘘がつけない", type: "fuji" },
-        { text: "動揺が顔や挙動にそのまま出てしまう", type: "ryuho" }
+        { text: "不安や動揺がすぐ挙動に出てしまう", type: "ryuho" },
+        { text: "そもそも感情の起伏が極めてフラット", type: "chile" }
       ]
     },
     {
-      q: "Q16. 組織の中での理想の立ち位置は？",
+      q: "Q18. どんなタイプの人に惹かれる・尊敬する？",
       opts: [
-        { text: "重役・ご意見番ポジション（現場には口を出さない）", type: "king" },
-        { text: "花形のエース営業・ディレクター", type: "shine" },
-        { text: "全員を束ねる現場監督・リーダー", type: "kyoho" },
-        { text: "黙々と結果だけを納品する単独スナイパー", type: "nagano" }
+        { text: "媚びずに自分の道を愚直に突き進んでいる人", type: "king" },
+        { text: "常に結果を出し続け、周囲への配慮も完璧な人", type: "shine" },
+        { text: "義理堅く、何があっても仲間を裏切らない人", type: "kyoho" },
+        { text: "過酷な環境でも文句を言わず耐え抜く人", type: "chile" },
+        { text: "仕事が電光石火で速く、無駄がない人", type: "nagano" }
       ]
     },
     {
-      q: "Q17. あなたが一番大切にしている価値観は？",
+      q: "Q19. 約束や予定が急にドタキャンになったら？",
       opts: [
-        { text: "義理と人情", type: "kyoho" },
-        { text: "合理性とスピード", type: "nagano" },
-        { text: "自由とマイペース", type: "king" },
-        { text: "どんな過酷さにも耐え抜く忍耐", type: "chile" }
+        { text: "「よし、完全な自由時間ができた」とむしろ大歓迎する", type: "king" },
+        { text: "すかさず別のタスクを入れて時間を有効活用する", type: "nagano" },
+        { text: "相手に気を遣わせないよう爽やかにフォローする", type: "shine" },
+        { text: "「自分、何か悪いことしたかな…」と不安になる", type: "ryuho" },
+        { text: "何事もなかったかのように家で静止する", type: "chile" }
       ]
     },
     {
-      q: "Q18. 後輩や部下に指導するときのスタンスは？",
+      q: "Q20. 目標を達成したときのリアクションは？",
       opts: [
-        { text: "「俺の背中を見て盗め」の昭和スタイル", type: "kyoho" },
-        { text: "マニュアル化して無駄なく最短で育てる", type: "nagano" },
-        { text: "褒めて乗せて気持ちよく動いてもらう", type: "shine" },
-        { text: "基本放置だが、本気で頼られたらトコトン付き合う", type: "king" }
+        { text: "「まあ、俺の実力なら当然やろ」と内心ドヤ顔をする", type: "king" },
+        { text: "支えてくれた周囲に感謝を伝え、スマートに祝う", type: "shine" },
+        { text: "苦楽を共にした仲間全員を集めて大宴会を開く", type: "kyoho" },
+        { text: "「やっと肩の荷が下りた…」と安堵して崩れ落ちる", type: "ryuho" },
+        { text: "余韻に浸ることなく、即座に次の目標に着手する", type: "nagano" }
       ]
     },
     {
-      q: "Q19. 人から相談事を受けたときは？",
+      q: "Q21. 面倒な派閥争いや人間関係に巻き込まれたら？",
       opts: [
-        { text: "親身になって聞き、時に熱く説教もする", type: "fuji" },
-        { text: "相手が求めている正解を察してスマートに答える", type: "shine" },
-        { text: "「まあ何とかなるやろ」と大物っぽく背中を押す", type: "king" },
-        { text: "相手の辛さに共感しすぎて自分まで落ち込む", type: "ryuho" }
+        { text: "「くだらん」と鼻で笑って完全に我関せずを貫く", type: "king" },
+        { text: "どちらの顔も立てつつ、一番得なポジションを確保する", type: "shine" },
+        { text: "筋の通っている方を漢気で応援する", type: "kyoho" },
+        { text: "板挟みになってメンタルを激しくすり減らす", type: "ryuho" },
+        { text: "争いごと無関係の別部署や外部へ淡々と避難する", type: "chile" }
       ]
     },
     {
-      q: "Q20. あなたの「野心」の強さは？",
+      q: "Q22. あなたの将来の野心や願望は？",
       opts: [
-        { text: "天下を取る気はないが、誰かの下につく気もサラサラない", type: "king" },
-        { text: "常に業界のトップ・主役を狙っている", type: "shine" },
-        { text: "伝統を継承し、自分の城を守り抜くこと", type: "kyoho" },
-        { text: "世界中どこでも食いっぱぐれない実力をつけること", type: "chile" }
+        { text: "天下は取らなくてもいいが、誰かの下で頭は下げたくない", type: "king" },
+        { text: "誰もが認める業界の主役・トップランナーになりたい", type: "shine" },
+        { text: "後世に残る強固な地盤と信頼を築き上げたい", type: "kyoho" },
+        { text: "世界中どこに行っても食いっぱぐれない技術を持ちたい", type: "chile" },
+        { text: "自分の技を極限まで研ぎ澄ましたスペシャリストになる", type: "nagano" }
       ]
     },
     {
-      q: "Q21. 面倒な人間関係に巻き込まれたら？",
+      q: "Q23. 自分をフルーツに例えるなら、どんな食感？",
       opts: [
-        { text: "表面上は穏便にかわしてフェードアウト", type: "shine" },
-        { text: "スパッと縁を切って最短距離で離脱する", type: "nagano" },
-        { text: "「めんどくさ」と態度に出して相手を怯ませる", type: "king" },
-        { text: "逃げ場を失ってポロポロ精神をすり減らす", type: "ryuho" }
-      ]
-    },
-    {
-      q: "Q22. あなたをフルーツに例えるなら、どんな食感？",
-      opts: [
-        { text: "大粒で噛みごたえ抜群、濃縮された強い味わい", type: "king" },
+        { text: "粒が大きく噛みごたえ抜群、濃縮された強い味わい", type: "king" },
         { text: "皮ごとパリッと弾けて果汁が溢れる完璧な食感", type: "shine" },
-        { text: "果汁が多すぎて手で持つと溢れ出してしまう繊細さ", type: "ryuho" },
-        { text: "凍らせてもサクサク噛めるクリスピーな硬さ", type: "chile" }
+        { text: "果汁が溢れすぎて手で持つと崩れそうな柔らかさ", type: "ryuho" },
+        { text: "凍らせてもサクサク噛めるクリスピーな硬さ", type: "chile" },
+        { text: "皮ごとサクッと締まった実が詰まっているストイック感", type: "nagano" }
       ]
     },
     {
-      q: "Q23. 自分自身の「世渡り」を自己評価すると？",
+      q: "Q24. あなたの人生訓に最も近い言葉は？",
       opts: [
-        { text: "器用ではないが、なぜか一目置かれる", type: "king" },
-        { text: "誰が見ても満点レベルで世渡り上手", type: "shine" },
-        { text: "不器用だが人間味でカバーしている", type: "kyoho" },
-        { text: "環境に恵まれないとすぐ干からびる", type: "ryuho" }
-      ]
-    },
-    {
-      q: "Q24. あなたが最も心地よいと感じる瞬間は？",
-      opts: [
-        { text: "自分のテリトリーで誰にも指図されず寛ぐとき", type: "king" },
-        { text: "周囲から「完璧ですね！」と絶賛されたとき", type: "shine" },
-        { text: "大きな仕事を豪快にやり遂げたあとの一杯", type: "fuji" },
-        { text: "タスクが予定より圧倒的な速さで片付いた瞬間", type: "nagano" }
+        { text: "「我が道を行く。分かる奴だけついてこい」", type: "king" },
+        { text: "「実力も人当たりも完璧であれ」", type: "shine" },
+        { text: "「義理と人情に勝るものなし」", type: "kyoho" },
+        { text: "「スピードこそ最大の付加価値」", type: "nagano" },
+        { text: "「どんな氷点下でも生き延びる」", type: "chile" }
       ]
     }
   ];
 
-  // 品種プロファイル
+  // 汎用バックアップ用（取得済みの詰め合わせコード）
+  const DEFAULT_AFF_HTML = `
+    <div style="border:1px solid #95a5a6;border-radius:.75rem;background-color:#FFFFFF;max-width:100%;width:504px;margin:0px;padding:5px;text-align:center;overflow:hidden;">
+      <table><tr>
+        <td style="width:240px">
+          <a href="https://hb.afl.rakuten.co.jp/ichiba/5760cf98.3572bfb4.5760cf99.ad6d99ae/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmonmiya%2F70008257%2F&link_type=picttext" target="_blank" rel="nofollow sponsored noopener">
+            <img src="https://hbb.afl.rakuten.co.jp/hgb/5760cf98.3572bfb4.5760cf99.ad6d99ae/?me_id=1295909&item_id=10007715&pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fmonmiya%2Fcabinet%2Fm5%2F70008257.jpg%3F_ex%3D240x240&s=240x240&t=picttext" border="0" style="margin:2px; max-width:100%; height:auto;" alt="ブドウ お任せ詰め合わせ">
+          </a>
+        </td>
+        <td style="vertical-align:top;width:248px;display:block;">
+          <p style="font-size:12px;line-height:1.4em;text-align:left;margin:0px;padding:2px 6px;">
+            <a href="https://hb.afl.rakuten.co.jp/ichiba/5760cf98.3572bfb4.5760cf99.ad6d99ae/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmonmiya%2F70008257%2F&link_type=picttext" target="_blank" rel="nofollow sponsored noopener" style="color:#333; text-decoration:none; font-weight:bold;">
+              ブドウ お任せ詰め合わせ [ 1kg / 2kg / 3kg / 4kg ] 高級 お取り寄せ グルメ
+            </a><br>
+            <span style="color:#bf0000; font-weight:bold; font-size:13px;">価格：4,500円～（税込）</span>
+          </p>
+          <div style="margin:10px 6px;">
+            <a href="https://hb.afl.rakuten.co.jp/ichiba/5760cf98.3572bfb4.5760cf99.ad6d99ae/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmonmiya%2F70008257%2F&link_type=picttext" target="_blank" rel="nofollow sponsored noopener" style="display:block; background-color:#bf0000; color:#fff !important; font-size:13px; font-weight:bold; text-decoration:none; padding:8px 0; border-radius:20px; text-align:center;">
+              楽天市場で購入する
+            </a>
+          </div>
+        </td>
+      </tr></table>
+    </div>
+  `;
+
+  // 品種データベース（★探してきた各ぶどうのアフィリエイトコードを貼り付け）
   const GRAPES = {
     king: {
       name: "キングデラウェア型",
       catch: "「看板はデカいが媚びは売らない。分かる奴だけついてこい」",
       desc: "堂々たる自信とマイペースを崩さない我が道を行く実力者。万人受けを狙わないため人気があるようなないような絶妙な立ち位置ですが、濃密な甘酸っぱさと実入りは本物。コアなファンに熱烈に支持される玄人肌です。",
-      lucky2027: "【甲州】（1000年の伝統と奥ゆかしさをプラスすると天下無敵）",
+      lucky2027: "【甲州】（伝統と奥ゆかしさをプラスすると天下無敵）",
       partner: "【シャインマスカット】（外回りは任せて内側を仕切れば最強）",
-      query: "キングデラウェア ぶどう"
+      affHtml: DEFAULT_AFF_HTML // ★キングデラウェアの楽天コードがあれば上書き
     },
     shine: {
       name: "シャインマスカット型",
@@ -338,7 +385,7 @@
       desc: "コミュ力が高くスマートな合理主義者。誰にでもオープンでトラブルを持ち込みません。完璧すぎて計算高いと見られることもありますが、結果を出し続ける実力は誰もが認めるエースです。",
       lucky2027: "【マスカット・ベーリーA】（泥臭い人間味を取り入れると評価急上昇）",
       partner: "【キングデラウェア】（お互いの表と裏を補い合える名タッグ）",
-      query: "シャインマスカット 秀品"
+      affHtml: DEFAULT_AFF_HTML // ★シャインマスカットの楽天コードがあれば上書き
     },
     kyoho: {
       name: "巨峰型",
@@ -346,7 +393,7 @@
       desc: "実績と信頼を重んじるリーダー気質。コクのある情の厚さで周囲から慕われます。本音をさらけ出すまでに少し時間がかかりますが、一度認めた仲間は最後まで守り抜きます。",
       lucky2027: "【クイーンニーナ】（若々しい華やかさを取り入れると吉）",
       partner: "【ピオーネ】（阿吽の呼吸で現場を回せる頼れる相棒）",
-      query: "巨峰 ぶどう 産直"
+      affHtml: DEFAULT_AFF_HTML // ★巨峰の楽天コードがあれば上書き
     },
     ryuho: {
       name: "竜宝型",
@@ -354,7 +401,7 @@
       desc: "溢れんばかりの魅力を持つロマンチスト。身内には神対応を見せますが、アウェイの環境や長距離移動に弱く、ストレスがかかると心がポロポロ折れてしまう繊細な天才肌です。",
       lucky2027: "【チリ産シードレス】（マイナス18度でも動じないタフさを吸収せよ）",
       partner: "【藤稔】（お互いのデリケートさを理解し合える優しい関係）",
-      query: "竜宝 ぶどう 幻"
+      affHtml: DEFAULT_AFF_HTML // ★竜宝の楽天コードがあれば上書き
     },
     nagano: {
       name: "ナガノパープル型",
@@ -362,7 +409,7 @@
       desc: "巨峰のコクとシャインの利便性を兼ね備えたストイック完璧主義。無駄を徹底的に削ぎ落としますが、感情論に巻き込まれると粒が裂けやすいのが弱点です。",
       lucky2027: "【スチューベン】（慌てずじっくり熟成を待つ粘り強さを）",
       partner: "【甲州】（静かな職人同士、干渉せずに信頼し合える）",
-      query: "ナガノパープル フルーツ"
+      affHtml: DEFAULT_AFF_HTML // ★ナガノパープルの楽天コードがあれば上書き
     },
     fuji: {
       name: "藤稔（ふじみのり）型",
@@ -370,7 +417,7 @@
       desc: "規格外の器の大きさを誇る力持ち。圧倒的な存在感で場を包み込みますが、衝撃に弱くプレッシャーがかかると脱粒してしまう繊細な一面を持っています。",
       lucky2027: "【ロザリオビアンコ】（上品さと冷静さを取り入れると吉）",
       partner: "【竜宝】（不器用な者同士、お互いを優しく労わり合える）",
-      query: "藤稔 ぶどう 特大"
+      affHtml: DEFAULT_AFF_HTML // ★藤稔の楽天コードがあれば上書き
     },
     chile: {
       name: "チリ産シードレス型",
@@ -378,27 +425,26 @@
       desc: "過酷な冷凍庫に放り込まれてもサクサク噛み砕ける驚異のタフネス。環境変化を一切気にせず安定した成果を出し続けますが、情緒や風情に欠けると見られがちです。",
       lucky2027: "【デラウェア】（初心に戻って素朴な甘酸っぱさを思い出す年）",
       partner: "【竜宝】（繊細な相手を無感情かつ完璧にカバーできる）",
-      query: "冷凍ぶどう シードレス"
+      affHtml: DEFAULT_AFF_HTML // ★冷凍ぶどうの楽天コードがあれば上書き
     }
   };
 
-  // 大凶枠
+  // 大凶枠：グレープフルーツ
   const GRAPEFRUIT = {
     name: "グレープフルーツ（凶）",
     catch: "「ぶどうヅラして生きてきた、柑橘界からの不法侵入者」",
     desc: "集団に平然と馴染んでいるようで、根本的な価値観が一切噛み合っていない異分子。特有の苦味で空気を凍らせ、分厚い皮で心をガードしています。\n※ぶどうではありません（ミカン科）。",
     lucky2027: "【デラウェア】（柑橘のトゲを捨て、初心に帰って小さく丸くなれ）",
     partner: "【角砂糖】（素直に甘やかされる覚悟を持つこと）",
-    query: "シャインマスカット 訳あり"
+    affHtml: DEFAULT_AFF_HTML
   };
 
-  // スロットの出目候補
   const SLOT_GRADES = [
     { label: "特秀（大吉）", text: "朝採れ完熟・ブルーム完璧。今日のあなたは無敵の仕上がり！", isGf: false },
     { label: "秀（中吉）", text: "糖度十分、贈答用クラス。周囲に配れば評価が爆上がりします。", isGf: false },
     { label: "良（吉）", text: "日常使いにちょうどいい安定感。堅実な成果が出せる良き日。", isGf: false },
     { label: "訳あり（小吉）", text: "味は抜群だが粒ぞろいが微妙。ちょっと見栄を張ると失敗しがち。", isGf: false },
-    { label: "規格外・大凶", text: "選果ミス発生！ぶどうの房からなぜか柑橘類がもぎ取られました。", isGf: true } // 凶枠
+    { label: "規格外・大凶", text: "選果ミス発生！ぶどうの房からなぜか柑橘類がもぎ取られました。", isGf: true }
   ];
 
   let currentQ = 0;
@@ -436,7 +482,7 @@
     if (currentQ < QUESTIONS.length) {
       renderQuestion(currentQ);
     } else {
-      // 24問終了 → 第25問スロットへ移行
+      // 24問回答終了 → 第25問スロットへ
       document.getElementById('quiz-area').style.display = 'none';
       document.getElementById('slot-area').style.display = 'block';
       document.getElementById('step-counter').innerText = `問 25 / 25（最終選別）`;
@@ -445,7 +491,6 @@
     }
   }
 
-  // スロット自動回転開始
   function startSlotMachine() {
     slotRunning = true;
     const screen = document.getElementById('slot-screen');
@@ -457,16 +502,14 @@
     }, 70);
   }
 
-  // スロットSTOPボタン
   function toggleSlot() {
     if (!slotRunning) return;
     clearInterval(slotTimer);
     slotRunning = false;
 
-    // 確率判定（大凶グレープフルーツは約8%）
     const rand = Math.random();
     if (rand < 0.08) {
-      selectedGrade = SLOT_GRADES[4]; // 大凶
+      selectedGrade = SLOT_GRADES[4]; // 8%で大凶
     } else if (rand < 0.35) {
       selectedGrade = SLOT_GRADES[0]; // 特秀
     } else if (rand < 0.70) {
@@ -488,7 +531,6 @@
   }
 
   function showFinalResult() {
-    // 最多得票の品種を決定
     let bestType = 'king';
     let max = -1;
     for (const k in scores) {
@@ -501,14 +543,9 @@
     let grape = GRAPES[bestType] || GRAPES['king'];
     let isGf = selectedGrade.isGf;
 
-    // 大凶スロットを引いた場合はグレープフルーツに強制上書き
     if (isGf) {
       grape = GRAPEFRUIT;
     }
-
-    // アフィリエイトURL（※楽天アフィリエイトなどの紹介リンクに差し替え可能）
-    const affSearchUrl = `https://a.r10.to/hYx8ha`;
-    const affPairUrl = `https://a.r10.to/hgrWFQ`;
 
     const resultHtml = `
       <div class="result-card ${isGf ? 'is-grapefruit' : ''}">
@@ -522,43 +559,15 @@
           <div class="meta-item">🤝 <strong>相性のいい相棒：</strong> ${grape.partner}</div>
         </div>
 
-       <div class="affiliate-box" style="background:#fff; border:2px solid #e0d0d8; border-radius:14px; padding:12px; margin:20px 0; overflow:hidden;">
-          <div style="font-size:0.95rem; font-weight:bold; color:#6b2d5c; margin-bottom:10px; text-align:center;">
-            ＼ 🍇 旬の味覚をお取り寄せ・ギフトに ／
-          </div>
-          
-          <div style="display:flex; justify-content:center; width:100%; overflow-x:auto;">
-            <div style="max-width:100%;">
-              <table border="0" cellpadding="0" cellspacing="0" style="margin:0 auto; max-width:100%;">
-                <tr><td>
-                  <div style="border:1px solid #95a5a6;border-radius:.75rem;background-color:#FFFFFF;max-width:100%;width:504px;margin:0px;padding:5px;text-align:center;overflow:hidden;">
-                    <table><tr>
-                      <td style="width:240px">
-                        <a href="https://hb.afl.rakuten.co.jp/ichiba/5760cf98.3572bfb4.5760cf99.ad6d99ae/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmonmiya%2F70008257%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ%3D%3D" target="_blank" rel="nofollow sponsored noopener" style="word-wrap:break-word;">
-                          <img src="https://hbb.afl.rakuten.co.jp/hgb/5760cf98.3572bfb4.5760cf99.ad6d99ae/?me_id=1295909&item_id=10007715&pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fmonmiya%2Fcabinet%2Fm5%2F70008257.jpg%3F_ex%3D240x240&s=240x240&t=picttext" border="0" style="margin:2px; max-width:100%; height:auto;" alt="ブドウ お任せ詰め合わせ">
-                        </a>
-                      </td>
-                      <td style="vertical-align:top;width:248px;display:block;">
-                        <p style="font-size:12px;line-height:1.4em;text-align:left;margin:0px;padding:2px 6px;word-wrap:break-word">
-                          <a href="https://hb.afl.rakuten.co.jp/ichiba/5760cf98.3572bfb4.5760cf99.ad6d99ae/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmonmiya%2F70008257%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ%3D%3D" target="_blank" rel="nofollow sponsored noopener" style="word-wrap:break-word; color:#333; text-decoration:none; font-weight:bold;">
-                            ブドウ お任せ詰め合わせ [ 1kg / 2kg / 3kg / 4kg ] 高級 お取り寄せ グルメ
-                          </a><br>
-                          <span style="color:#bf0000; font-weight:bold; font-size:13px;">価格：4,500円～（税込）</span>
-                        </p>
-                        <div style="margin:10px 6px;">
-                          <a href="https://hb.afl.rakuten.co.jp/ichiba/5760cf98.3572bfb4.5760cf99.ad6d99ae/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fmonmiya%2F70008257%2F%3Fscid%3Daf_pc_bbtn&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ==" target="_blank" rel="nofollow sponsored noopener" style="display:block; background-color:#bf0000; color:#fff !important; font-size:13px; font-weight:bold; text-decoration:none; padding:8px 0; border-radius:20px; text-align:center;">
-                            楽天市場で詳細を見る
-                          </a>
-                        </div>
-                      </td>
-                    </tr></table>
-                  </div>
-                </td></tr>
-              </table>
-            </div>
+        <!-- 診断された品種の販売ウィジェット（自動出し分け） -->
+        <div class="affiliate-wrapper">
+          <div class="aff-header">＼ ${isGf ? 'お口直しに本物のぶどうをどうぞ' : `あなたの品種【${grape.name.replace('型','')}】を産直・楽天でチェック`} ／</div>
+          <div class="aff-content">
+            ${grape.affHtml}
           </div>
         </div>
-        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`【ぶどう占い2027】25問判定の結果、【${selectedGrade.label}】${grape.name}でした！\n${grape.catch}\n\n▼あなたの品種と出荷等級をスロットで判定\n`)}&url=${encodeURIComponent(window.location.href)}" target="_blank" rel="noopener" class="share-btn">
+
+        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`【ぶどう占い2027】25問判定の結果、【${selectedGrade.label}】${grape.name}でした！\n${grape.catch}\n\n▼あなたの品種と出荷等級を判定\n`)}&url=${encodeURIComponent(window.location.href)}" target="_blank" rel="noopener" class="share-btn">
           𝕏 で結果をポストする
         </a>
         <button class="retry-btn" onclick="location.reload()">最初からやり直す</button>
@@ -573,7 +582,6 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // クイズ開始
   initQuiz();
 </script>
 
